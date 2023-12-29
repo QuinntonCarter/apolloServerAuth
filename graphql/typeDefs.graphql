@@ -1,0 +1,44 @@
+# message
+type Message {
+  text: String!
+  username: String!
+}
+
+input MessageInput {
+  text: String
+  username: String
+}
+# user
+type User {
+  username: String!
+  email: String!
+  password: String!
+  token: String
+}
+
+input RegisterInput {
+  username: String!
+  email: String!
+  password: String!
+  # confirmPassword: String
+}
+
+# login
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+# queries
+type Query {
+  getMsg: Message
+  user(id: ID!): User
+  users: [User]
+}
+
+# mutations
+type Mutation {
+  registerUser(registerInput: RegisterInput): User!
+  loginUser(loginInput: LoginInput): User!
+  createMessage(messageInput: MessageInput): Message!
+}
