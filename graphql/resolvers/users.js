@@ -1,5 +1,6 @@
 import User from "../../models/User.js";
 import { ApolloError } from "apollo-server-errors";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const userResolvers = {
@@ -39,36 +40,36 @@ export const userResolvers = {
       newUser.token = token;
 
       // save newUser to MongoDB
-      const res = await newUser.save();
+      const { _doc } = await newUser.save();
 
       // return data to client
       return {
-        //returns users's id
-        id: res.id,
-        // returns rest of user document
-        ...res._doc,
+        id: _doc._id,
+        ..._doc,
       };
     },
     async loginUser(parentValue, { loginInput: { email, password } }) {
       // see if user exists with email
-      const existingUser = User.findOne({ email });
+      const existingUser = await User.findOne({ email });
+      console.log("test", existingUser._doc);
       // Check if entered password === encrypted password on User model
       if (
         existingUser &&
-        (await bcrypt.compare(password, existingUser.model))
+        (await bcrypt.compare(password, existingUser.password))
       ) {
         // Create new JWT token
         const token = jwt.sign(
-          { user_id: newUser._id, email },
+          { user_id: existingUser._id, email },
           process.env._SECRET,
           {
             expiresIn: "2h",
           }
         );
+
         // Attach token to user model
         existingUser.token = token;
         return {
-          id: existingUser.id,
+          id: existingUser._doc._id,
           ...existingUser._doc,
         };
       } else {
@@ -78,11 +79,17 @@ export const userResolvers = {
     },
   },
   Query: {
-    user: (parentValue, { ID }) => {
-      return User.findById(ID);
+    async user(parentValue, { id }) {
+      const user = await User.findById(id);
+      if (!user) {
+        throw new ApolloError("User not found");
+      } else {
+        return user;
+      }
     },
-    users: (parentValue, args) => {
-      return User.find();
+    async users(parentValue, args) {
+      const users = await User.find();
+      return users;
     },
   },
 };
