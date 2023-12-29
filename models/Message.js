@@ -6,9 +6,9 @@ const MessageSchema = new Schema(
       type: String,
       default: null,
     },
-    username: {
-      type: String,
-      default: null,
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }

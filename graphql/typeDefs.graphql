@@ -1,20 +1,22 @@
 # message
 type Message {
   text: String!
-  username: String!
+  userId: ID!
+  id: ID # even though the schema id key is _id, this field allows return of said _id as id
 }
 
 input MessageInput {
-  text: String
-  username: String
+  text: String!
+  userId: ID!
 }
+
 # user
 type User {
   username: String!
   email: String!
   password: String!
   token: String
-  id: ID
+  id: ID # even though the schema id key is _id, this field allows return of said _id as id
 }
 
 input RegisterInput {
@@ -32,9 +34,10 @@ input LoginInput {
 
 # queries
 type Query {
-  getMsg: Message
   user(id: ID!): User
   users: [User]
+  message(id: ID!): Message
+  messages: [Message]
 }
 
 # mutations

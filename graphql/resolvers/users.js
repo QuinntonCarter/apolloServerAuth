@@ -51,7 +51,6 @@ export const userResolvers = {
     async loginUser(parentValue, { loginInput: { email, password } }) {
       // see if user exists with email
       const existingUser = await User.findOne({ email });
-      console.log("test", existingUser._doc);
       // Check if entered password === encrypted password on User model
       if (
         existingUser &&
