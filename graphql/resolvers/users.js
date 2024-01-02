@@ -76,11 +76,34 @@ export const userResolvers = {
         throw new ApolloError("Incorrect password", "INCORRECT_PASSWORD");
       }
     },
+    async logoutUser(parentValue, { logoutInput: { id } }) {
+      // find user by ID and set token to null
+      const loggedOutUser = await User.findOneAndUpdate(
+        { _id: id },
+        {
+          $unset: {
+            token: null,
+          },
+        }
+      );
+      // remove password from user doc before return
+      const { password, ...restOfUser } = loggedOutUser._doc;
+      // error handle if no user doc returned
+      if (!loggedOutUser) {
+        throw new ApolloError(
+          `Error logging out user ${id}, please reload and try again`
+        );
+      } else {
+        // return user doc without password
+        return restOfUser;
+      }
+    },
   },
   Query: {
     async user(parentValue, { id }) {
+      // find user by args.id/id
       const user = await User.findOne({ _id: id }).populate("messages");
-
+      // if no user found, throw error
       if (!user) {
         throw new ApolloError("User not found");
       } else {
@@ -88,8 +111,9 @@ export const userResolvers = {
       }
     },
     async users(parentValue, args) {
+      // find all users
       const users = await User.find().populate("messages");
-
+      // return users
       return users;
     },
   },

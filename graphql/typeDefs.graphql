@@ -33,6 +33,11 @@ input LoginInput {
   password: String!
 }
 
+# logout
+input LogoutInput {
+  id: ID!
+}
+
 # queries
 type Query {
   user(id: ID!): User
@@ -45,5 +50,6 @@ type Query {
 type Mutation {
   registerUser(registerInput: RegisterInput): User!
   loginUser(loginInput: LoginInput): User!
+  logoutUser(logoutInput: LogoutInput): User!
   createMessage(messageInput: MessageInput): Message!
 }
