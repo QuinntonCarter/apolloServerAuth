@@ -64,6 +64,7 @@ export const userResolvers = {
             expiresIn: "2h",
           }
         );
+        // populate messages field on user schema
         await existingUser.populate("messages");
         // Attach token to user model
         existingUser.token = token;
