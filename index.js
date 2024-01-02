@@ -31,7 +31,7 @@ const connectDB = async () => {
     //     const user = await getUser(token);
     //     return { user };
     //   },
-    listen: { port: 4000 },
+    listen: { port: process.env.PORT },
   });
   console.log(`server is listening at port ${url}`);
 };
