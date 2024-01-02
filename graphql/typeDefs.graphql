@@ -3,7 +3,7 @@ type User {
   username: String!
   email: String!
   password: String!
-  messages: [Message] #not populating, [Message] also kept returning an empty array
+  messages: [Message] # use message schema to populate messages array for user model; resolver populates using ID stored on schema
   token: String
   id: ID # even though the schema id key is _id, this field allows return of said _id as id
 }

@@ -80,7 +80,7 @@ export const userResolvers = {
   Query: {
     async user(parentValue, { id }) {
       const user = await User.findOne({ _id: id }).populate("messages");
-      console.log("user", user);
+
       if (!user) {
         throw new ApolloError("User not found");
       } else {
@@ -89,8 +89,7 @@ export const userResolvers = {
     },
     async users(parentValue, args) {
       const users = await User.find().populate("messages");
-      const users2 = await User.find();
-      console.log("user view", users, "users no populate", users2);
+
       return users;
     },
   },
