@@ -6,9 +6,10 @@ const MessageSchema = new Schema(
       type: String,
       default: null,
     },
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      unique: false,
     },
   },
   { timestamps: true }

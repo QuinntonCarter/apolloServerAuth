@@ -13,6 +13,10 @@ const UserSchema = new Schema(
       unique: true,
     },
     password: { type: String },
+    messages: {
+      type: [Schema.Types.ObjectId],
+      ref: "Message",
+    },
     token: {
       type: String,
       unique: true,
