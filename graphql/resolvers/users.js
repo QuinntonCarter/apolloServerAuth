@@ -1,7 +1,7 @@
-import User from "../../models/User.js";
 import { ApolloError } from "apollo-server-errors";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import User from "../../models/User.js";
 
 export const userResolvers = {
   Mutation: {
@@ -40,12 +40,12 @@ export const userResolvers = {
       newUser.token = token;
 
       // save newUser to MongoDB
-      const { _doc } = await newUser.save();
+      const res = await newUser.save();
 
       // return data to client
       return {
-        id: _doc._id,
-        ..._doc,
+        id: res._doc._id,
+        ...res._doc,
       };
     },
     async loginUser(parentValue, { loginInput: { email, password } }) {
@@ -64,7 +64,7 @@ export const userResolvers = {
             expiresIn: "2h",
           }
         );
-
+        await existingUser.populate("messages");
         // Attach token to user model
         existingUser.token = token;
         return {
@@ -79,7 +79,8 @@ export const userResolvers = {
   },
   Query: {
     async user(parentValue, { id }) {
-      const user = await User.findById(id);
+      const user = await User.findOne({ _id: id }).populate("messages");
+      console.log("user", user);
       if (!user) {
         throw new ApolloError("User not found");
       } else {
@@ -87,7 +88,9 @@ export const userResolvers = {
       }
     },
     async users(parentValue, args) {
-      const users = await User.find();
+      const users = await User.find().populate("messages");
+      const users2 = await User.find();
+      console.log("user view", users, "users no populate", users2);
       return users;
     },
   },

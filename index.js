@@ -1,9 +1,9 @@
-import { config } from "dotenv";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import resolvers from "./graphql/resolvers/index.js";
 import { loadSchemaSync } from "@graphql-tools/load";
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
+import resolvers from "./graphql/resolvers/index.js";
+import { config } from "dotenv";
 import mongoose from "mongoose";
 import colors from "colors";
 

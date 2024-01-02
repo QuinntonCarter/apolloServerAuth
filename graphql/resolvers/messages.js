@@ -1,17 +1,34 @@
-import Message from "../../models/Message.js";
 import { ApolloError } from "apollo-server-errors";
+import Message from "../../models/Message.js";
+import User from "../../models/User.js";
 
 export const messageResolvers = {
   Mutation: {
-    async createMessage(parentValue, { messageInput: { text, userId } }) {
+    async createMessage(parentValue, { messageInput: { text, user } }) {
       // create new message
       const newMessage = new Message({
         text: text,
-        userId: userId,
+        user: user,
       });
 
       // save to db
       const res = await newMessage.save();
+
+      // add message to submitting user's message array
+      await User.findOneAndUpdate(
+        { _id: user },
+        {
+          $push: {
+            messages: res,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      // populate user field via ref id for return
+      await res.populate("user");
 
       // return applicable data
       return {
@@ -23,20 +40,20 @@ export const messageResolvers = {
     },
   },
   Query: {
-    async message(parentValue, { ID }) {
-      // sometheing wrong w this query **
-      // #
-      // const res = Message.findById(ID);
-      // console.log("message", res);
-      // if (!res) {
-      //   throw new ApolloError("Message not found");
-      // } else {
-      //   return res;
-      // }
-      // ##
+    async message(parentValue, { id }) {
+      // find doc by ID and populate user field
+      const res = Message.findById(id).populate("user");
+
+      if (!res) {
+        throw new ApolloError("Message not found");
+      } else {
+        return res;
+      }
     },
     async messages(parentValue, args) {
-      const res = await Message.find();
+      // find doc and populate user field
+      const res = await Message.find().populate("user");
+
       return res;
     },
   },
